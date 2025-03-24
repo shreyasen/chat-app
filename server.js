@@ -7,6 +7,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 connectDB();
@@ -14,6 +15,8 @@ connectDB();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use("/uploads", express.static(path.resolve("uploads")));
 
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);

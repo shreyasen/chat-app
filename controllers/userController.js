@@ -3,9 +3,8 @@ import generateToken from "../utils/generateToken.js";
 
 // Register User
 const registerUser = async (req, res) => {
-  const { name, email, password, profilePic } = req.body;
-  console.log(name, email, password, profilePic);
-
+  const { name, email, password } = req.body;
+  const profilePic = req.file ? `/uploads/${req.file.filename}` : "";
   const userExists = await User.findOne({ email });
   if (userExists) {
     return res.status(400).json({ message: "User already exists" });
