@@ -6,9 +6,8 @@ const userSchema = mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profilePic: {
-      type: String,
-    },
+    profilePic: { type: String },
+    status: { type: String, default: "Hey there! I am using Whatsup." },
   },
   { timestamps: true }
 );
