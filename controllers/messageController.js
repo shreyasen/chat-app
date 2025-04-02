@@ -29,6 +29,11 @@ const sendMessage = async (req, res) => {
     // Emit to chat room instead of individual users
     const io = req.app.get("io");
     io.to(chatId).emit("messageReceived", populatedMessage);
+    populatedMessage.chat.users.forEach((user) => {
+      if (user._id.toString() !== req.user._id.toString()) {
+        io.to(user._id.toString()).emit("messageReceived", populatedMessage);
+      }
+    });
 
     res.json(populatedMessage);
   } catch (error) {
