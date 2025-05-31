@@ -5,6 +5,7 @@ import {
   fetchChats,
   createChat,
   createGroupChat,
+  markChatAsRead,
 } from "../controllers/chatController.js";
 
 const router = express.Router();
@@ -12,6 +13,7 @@ const router = express.Router();
 router.post("/new", protect, createChat);
 router.post("/", protect, accessChat);
 router.get("/", protect, fetchChats);
+router.put("/:chatId/read", protect, markChatAsRead);
 router.post("/group", protect, createGroupChat);
 
 export default router;

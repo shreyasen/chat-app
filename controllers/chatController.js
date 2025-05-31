@@ -1,5 +1,4 @@
 import Chat from "../models/chatModel.js";
-import User from "../models/userModel.js";
 
 const createChat = async (req, res) => {
   const { userId } = req.body;
@@ -57,12 +56,19 @@ const accessChat = async (req, res) => {
 
 // Fetch all Chats of Logged-in User
 const fetchChats = async (req, res) => {
-  const chats = await Chat.find({ users: req.user._id })
+  const userId = req.user._id; // Get the user ID from the request object
+  const chats = await Chat.find({ users: userId })
     .populate("users", "-password")
     .populate("latestMessage")
-    .sort({ updatedAt: -1 });
+    .sort({ updatedAt: -1 }) // Sort by updatedAt to get the most recent chats first
+    .lean();
 
-  res.status(200).json(chats);
+  const updatedChats = chats.map((chat) => ({
+    ...chat,
+    unreadCount: chat.unreadCounts?.[userId.toString()] || 0,
+  }));
+
+  res.status(200).json(updatedChats);
 };
 
 const createGroupChat = async (req, res) => {
@@ -95,4 +101,17 @@ const createGroupChat = async (req, res) => {
   res.status(200).json(fullGroupChat);
 };
 
-export { createChat, accessChat, fetchChats, createGroupChat };
+const markChatAsRead = async (req, res) => {
+  const { chatId } = req.params;
+  const userId = req.user._id;
+
+  const chat = await Chat.findById(chatId);
+  if (chat.unreadCounts.has(userId.toString())) {
+    chat.unreadCounts.set(userId.toString(), 0);
+    await chat.save();
+  }
+
+  res.json({ success: true });
+};
+
+export { createChat, accessChat, fetchChats, createGroupChat, markChatAsRead };

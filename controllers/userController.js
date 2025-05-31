@@ -52,23 +52,11 @@ const getUserProfile = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// const user = await User.findById(req.user._id);
-
-// if (user) {
-//   res.json({
-//     _id: user._id,
-//     name: user.name,
-//     email: user.email,
-//     profilePic: user.profilePic,
-//   });
-// } else {
-//   res.status(404).json({ message: "User not found" });
-// }
 
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({ _id: { $ne: req.user._id } }).select(
-      "-password"
+      "name profilePic status _id"
     );
     res.status(200).json(users);
   } catch (error) {

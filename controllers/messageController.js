@@ -34,7 +34,16 @@ const sendMessage = async (req, res) => {
         io.to(user._id.toString()).emit("messageReceived", populatedMessage);
       }
     });
+    const chat = await Chat.findById(chatId);
 
+    chat.users.forEach((id) => {
+      if (id.toString() !== req.user._id.toString()) {
+        const current = chat.unreadCounts.get(id.toString()) || 0;
+        chat.unreadCounts.set(id.toString(), current + 1);
+      }
+    });
+
+    await chat.save();
     res.json(populatedMessage);
   } catch (error) {
     res.status(500).json({ message: error.message });
